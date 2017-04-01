@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml;
 
 public class RoomBuilder : MonoBehaviour {
 
@@ -54,7 +57,8 @@ public class RoomBuilder : MonoBehaviour {
             }
         }
         Vector3 dimensions = new Vector3(Mathf.Abs(lowerBounds.x - upperBounds.x)+1, Mathf.Abs(lowerBounds.y - upperBounds.y)+1, Mathf.Abs(lowerBounds.z - upperBounds.z)+1);
-        Room room = new Room();
+        Room room = new Room(RoomName,relativeChance.ToString(),dimensions,lowerBounds,upperBounds,doorObjects);
+        SaveToXML(room);
         DoCreateSimplePrefab(lastParent.transform);
     }
 
@@ -83,7 +87,8 @@ public class RoomBuilder : MonoBehaviour {
             {
                 Vector3 relativeIndex = ope.direction.DirectionOffset() + block.index;
                 relativeIndex += new Vector3(0, ope.yChange, 0);
-                doorObjects.Add(new Door(relativeIndex));
+                Door newDoor = new Door(relativeIndex, ope.direction);
+                doorObjects.Add(newDoor);
             }
         }
     }
@@ -152,6 +157,21 @@ public class RoomBuilder : MonoBehaviour {
             PrefabUtility.ReplacePrefab(transform.gameObject, prefab, ReplacePrefabOptions.ConnectToPrefab);
         }
     }
+
+    void SaveToXML(Room room)
+    {
+        XmlSerializer xsSubmit = new XmlSerializer(typeof(Room));
+        var xml = "";
+
+        using (StreamWriter file = File.AppendText("Assets/StreamingAssets/XML/" + room.name+".xml"))
+        {
+            using (XmlWriter writer = XmlWriter.Create(file))
+            {
+                xsSubmit.Serialize(writer, room);
+            }
+        }
+    }
+
 
     void OnDrawGizmos()
     {

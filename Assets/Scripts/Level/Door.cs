@@ -4,24 +4,39 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-[System.Serializable]
+[XmlType("Door")]
 public class Door
 {
-    private Room room;
-    private Room connectedRoom;
+    [XmlElement("DoorDirection")]
     private DoorDirection direction;
-    private Vector3 relativeIndex;
-    private Vector3 worldIndex;
+    [XmlElement("LocalIndex")]
+    private SerializableVector3 relativeIndex;
+    [XmlElement("WorldIndex")]
+    private SerializableVector3 worldIndex;
+    
+    [XmlIgnoreAttribute]
+    private Room room;
+    [XmlIgnoreAttribute]
+    private Room connectedRoom;
 
+    [XmlIgnoreAttribute]
     private GameObject physicalDoor;
+    [XmlIgnoreAttribute]
     public GameObject leftDoor { get; set; }
+    [XmlIgnoreAttribute]
     public GameObject rightDoor { get; set; }
-
+    [XmlIgnoreAttribute]
     public bool isClosed { get; set; }
 
-    public Door(Vector3 relativeIndex)
+    public Door()
+    {
+
+    }
+
+    public Door(Vector3 relativeIndex, DoorDirection direction)
     {
         this.relativeIndex = relativeIndex;
+        this.direction = direction;
     }
 
     public Door(Room room, Vector3 relativeIndex)

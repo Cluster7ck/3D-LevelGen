@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 
 [System.Serializable]
+[XmlInclude(typeof(Door))]
 public class Room : System.IEquatable<Room>
 {
     static public float baseSize;
@@ -26,22 +27,27 @@ public class Room : System.IEquatable<Room>
     [XmlElement("LowerBound")]
     public SerializableVector3 lowerBound;
 
-    [XmlArray("DoorIndices"), XmlArrayItem("Door")]
+    [XmlIgnore]
     public List<RoomIndex> doorIndices;
-
+    
     [XmlIgnoreAttribute]
     public GameObject gameObject;
 
     [XmlIgnoreAttribute]
     public int pathLength = 0;
 
-    [XmlIgnore]
-    //New door gets added everytime a doorIndex is removed from doorIndices
+    [XmlArray("Doors"), XmlArrayItem("Door")]
     public List<Door> doors = new List<Door>();
+
+    [XmlIgnoreAttribute]
     public Vector3 index;
+    [XmlIgnoreAttribute]
     public Vector3 worldPosition;
+    [XmlIgnoreAttribute]
     public float floatChance;
+    [XmlIgnoreAttribute]
     private float startSizeX;
+    [XmlIgnoreAttribute]
     private float startSizeY;
 
 	[XmlIgnoreAttribute]
@@ -62,7 +68,7 @@ public class Room : System.IEquatable<Room>
         this.upperBound = upperBound;
         foreach (Door door in doors)
         {
-            this.doors.Add(door);
+            this.doors.Add(new Door(door));
         }
     }
 
