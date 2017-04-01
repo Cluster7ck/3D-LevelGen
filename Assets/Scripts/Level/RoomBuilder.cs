@@ -53,12 +53,9 @@ public class RoomBuilder : MonoBehaviour {
                 count++;
             }
         }
-        Debug.Log("Upper: " + upperBounds + " Lower: " + lowerBounds);
-        foreach(Door door in doorObjects)
-        {
-            Debug.Log("Door: "+door.getRelativeDoorIndex());
-        }
-        //DoCreateSimplePrefab(lastParent.transform);
+        Vector3 dimensions = new Vector3(Mathf.Abs(lowerBounds.x - upperBounds.x)+1, Mathf.Abs(lowerBounds.y - upperBounds.y)+1, Mathf.Abs(lowerBounds.z - upperBounds.z)+1);
+        Room room = new Room();
+        DoCreateSimplePrefab(lastParent.transform);
     }
 
     void checkForDoors(BlockData block, Block blockScript, Vector3 lowerBounds, Vector3 upperBounds)
@@ -139,7 +136,6 @@ public class RoomBuilder : MonoBehaviour {
 
     static void DoCreateSimplePrefab(Transform transform)
     {
-        Debug.Log("wat");
         Object prefab = null;
 
         try
@@ -150,10 +146,9 @@ public class RoomBuilder : MonoBehaviour {
         {
             Debug.Log(e);
         }
-        Debug.Log(prefab);
         if (prefab == null)
         {
-            prefab = PrefabUtility.CreateEmptyPrefab("Resources/Rooms/" + transform.gameObject.name + ".prefab");
+            prefab = PrefabUtility.CreateEmptyPrefab("Assets/Resources/Rooms/" + transform.gameObject.name + ".prefab");
             PrefabUtility.ReplacePrefab(transform.gameObject, prefab, ReplacePrefabOptions.ConnectToPrefab);
         }
     }

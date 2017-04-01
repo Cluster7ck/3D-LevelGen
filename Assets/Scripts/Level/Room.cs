@@ -53,6 +53,19 @@ public class Room : System.IEquatable<Room>
         worldPosition = new Vector3(0, 0, 0);
     }
 
+    public Room(string name, string chanceString, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound, List<Door> doors)
+    {
+        this.name = name;
+        this.chanceString = chanceString;
+        this.dimensions = dimensions;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        foreach (Door door in doors)
+        {
+            this.doors.Add(door);
+        }
+    }
+
     public void PostDeserialization()
     {
         floatChance = float.Parse(chanceString, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
