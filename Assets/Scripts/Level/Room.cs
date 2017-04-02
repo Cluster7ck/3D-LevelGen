@@ -26,9 +26,6 @@ public class Room : System.IEquatable<Room>
 
     [XmlElement("LowerBound")]
     public SerializableVector3 lowerBound;
-
-    [XmlIgnore]
-    public List<RoomIndex> doorIndices;
     
     [XmlIgnoreAttribute]
     public GameObject gameObject;
@@ -87,13 +84,8 @@ public class Room : System.IEquatable<Room>
         this.startSizeX = other.startSizeX;
         this.startSizeY = other.startSizeY;
         this.floatChance = other.floatChance;
-        this.doorIndices = new List<RoomIndex>();
         this.index = other.index;
         this.worldPosition = other.worldPosition;
-        foreach (RoomIndex door in other.doorIndices)
-        {
-            this.doorIndices.Add(new RoomIndex(door));
-        }
         foreach (Door door in other.doors)
         {
             this.doors.Add(new Door(door));
@@ -165,7 +157,7 @@ public class Room : System.IEquatable<Room>
         */
     }
 
-    private Vector3 rotateIndex(RoomIndex doorIndex, float sizeXR, float sizeYR)
+    private Vector3 rotateIndex(Vector3 doorIndex, float sizeXR, float sizeYR)
     {
         float rotatedSizeX = sizeYR;
         float rotatedSizeY = sizeXR;
@@ -253,11 +245,6 @@ public class Room : System.IEquatable<Room>
         connectedDoor.open();
         door.open();*/
     }
-
-    public List<RoomIndex> getDoors()
-    {
-        return this.doorIndices;
-    }
     public Vector3 getIndex()
     {
         return this.index;
@@ -268,11 +255,12 @@ public class Room : System.IEquatable<Room>
         return floatChance;
     }
 
-    public bool containsDoor(RoomIndex index)
+    /*
+    public bool containsdoor(roomindex index)
     {
-        foreach (RoomIndex i in this.doorIndices)
+        foreach (roomindex i in this.doorindices)
         {
-            if (i.Equals(index))
+            if (i.equals(index))
             {
                 return true;
             }
@@ -280,7 +268,7 @@ public class Room : System.IEquatable<Room>
 
         return false;
     }
-
+    */
     static public void setBaseSize(float baseSize)
     {
         Room.baseSize = baseSize;
@@ -294,30 +282,6 @@ public class Room : System.IEquatable<Room>
     public Vector3 doorToWorldIndex(Vector3 door)
     {
         return this.index + door;
-    }
-
-    public RoomIndex doorToLocalIndex(RoomIndex door, DoorDirection direction)
-    {
-        /*
-        switch (direction)
-        {
-            case DoorDirection.NORTH:
-                door.y += 1;
-                break;
-            case DoorDirection.EAST:
-                door.x += 1;
-                break;
-            case DoorDirection.SOUTH:
-                door.y -= 1;
-                break;
-            case DoorDirection.WEST:
-                door.x -= 1;
-                break;
-        }
-        return door - this.index;
-
-        */
-        return new RoomIndex(0,0);
     }
 
     public override bool Equals(object obj)

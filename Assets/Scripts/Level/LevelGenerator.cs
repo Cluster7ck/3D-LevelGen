@@ -803,8 +803,8 @@ public class LevelGenerator : MonoBehaviour
 public class DoorHelperClass
 {
     public Room room;
-    public RoomIndex doorIndex;
-    public DoorHelperClass(Room room, RoomIndex doorIndex)
+    public Vector3 doorIndex;
+    public DoorHelperClass(Room room, Vector3 doorIndex)
     {
         this.room = room;
         this.doorIndex = doorIndex;

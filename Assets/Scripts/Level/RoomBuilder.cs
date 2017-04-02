@@ -31,6 +31,7 @@ public class RoomBuilder : MonoBehaviour {
         deleteLast();
         lastParent = new GameObject(RoomName);
 
+        //Check the bounds of the Room. Then move all tiles over, so that the bottom left is at 0,0
         Vector3 lowerBounds = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         Vector3 upperBounds = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         //Room room = new Room();
@@ -39,6 +40,27 @@ public class RoomBuilder : MonoBehaviour {
         {
             checkBounds(ref lowerBounds, ref upperBounds, block.index);
         }
+        Debug.Log("Low: " + lowerBounds + " Upper: " + upperBounds);
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            if(lowerBounds != Vector3.zero)
+            {
+                blocks[i].index = blocks[i].index - lowerBounds; //new Vector3(Mathf.Abs(lowerBounds.x), Mathf.Abs(lowerBounds.y), Mathf.Abs(lowerBounds.z));
+            }
+        }
+        //Bounds have to be recalculated, so the Doors can be placed
+        lowerBounds = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        upperBounds = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        foreach (BlockData block in blocks)
+        {
+            checkBounds(ref lowerBounds, ref upperBounds, block.index);
+        }
+        
+        /*lowerBounds = Vector3.zero;
+        upperBounds = upperBounds - lowerBounds;*/
+        Debug.Log("After relocate");
+        Debug.Log("Low: " + lowerBounds + " Upper: " + upperBounds);
+
 
         int count = 1;
         foreach (BlockData block in blocks)
@@ -60,6 +82,15 @@ public class RoomBuilder : MonoBehaviour {
         Room room = new Room(RoomName,relativeChance.ToString(),dimensions,lowerBounds,upperBounds,doorObjects);
         SaveToXML(room);
         DoCreateSimplePrefab(lastParent.transform);
+    }
+
+    void rotateRoom()
+    {
+        RoomMono room = lastParent.GetComponent<RoomMono>();
+        if(room != null)
+        {
+            room.rotate90DegClockwise(1);
+        }
     }
 
     void checkForDoors(BlockData block, Block blockScript, Vector3 lowerBounds, Vector3 upperBounds)

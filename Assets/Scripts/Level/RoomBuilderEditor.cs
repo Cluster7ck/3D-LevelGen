@@ -13,5 +13,9 @@ public class RoomBuilderEditor : Editor {
         {
             myScript.buildRoom();
         }
+        if (GUILayout.Button("Build Room"))
+        {
+            myScript.rotateRoom();
+        }
     }
 }

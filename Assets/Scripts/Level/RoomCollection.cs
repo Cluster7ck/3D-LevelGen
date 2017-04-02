@@ -42,7 +42,7 @@ public class RoomCollection
 
         return serializer.Deserialize(new StringReader(text)) as RoomCollection;
     }
-
+    /*
     public void show()
     {
         Debug.Log("Size: " + this.baseSize);
@@ -56,7 +56,7 @@ public class RoomCollection
             }
         }
     }
-
+    */
     public void PostDeserialization()
     {
         baseSize = float.Parse(baseSizeString, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
