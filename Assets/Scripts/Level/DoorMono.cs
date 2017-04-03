@@ -1,49 +1,20 @@
-﻿using UnityEngine;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Serialization;
+using UnityEngine;
 
-[XmlType("Door")]
-public class Door
-{
-    [XmlElement("DoorDirection")]
+public class DoorMono : MonoBehaviour {
+    
     private DoorDirection direction;
-    [XmlElement("LocalIndex")]
     private SerializableVector3 relativeIndex;
-    [XmlElement("WorldIndex")]
     private SerializableVector3 worldIndex;
     
-    [XmlIgnoreAttribute]
     private Room room;
-    [XmlIgnoreAttribute]
     private Room connectedRoom;
-
-    [XmlIgnoreAttribute]
+    
     private GameObject physicalDoor;
-    [XmlIgnoreAttribute]
     public GameObject leftDoor { get; set; }
-    [XmlIgnoreAttribute]
     public GameObject rightDoor { get; set; }
-    [XmlIgnoreAttribute]
     public bool isClosed { get; set; }
-
-    public Door()
-    {
-
-    }
-
-    public Door(Vector3 relativeIndex, DoorDirection direction)
-    {
-        this.relativeIndex = relativeIndex;
-        this.direction = direction;
-    }
-
-    public Door(Room room, Vector3 relativeIndex)
-    {
-        this.room = room;
-        this.relativeIndex = relativeIndex;
-    }
 
     public void initDoor(Room connectedRoom, DoorDirection direction, Vector3 worldIndex)
     {
@@ -52,26 +23,6 @@ public class Door
         this.worldIndex = worldIndex;
         isClosed = true;
     }
-
-    public Door(Door other)
-    {
-        this.connectedRoom = other.getConnectedRoom();
-        this.direction = other.getDirection();
-        this.relativeIndex = other.getRelativeDoorIndex();
-        this.worldIndex = other.getWorldDoorIndex();
-        this.physicalDoor = other.getPhysicalDoor();
-    }
-
-    public void rotateDoorIndex(Vector3 tempBound)
-    {
-        Vector3 rotatedPosition = relativeIndex - tempBound / 2;
-
-        rotatedPosition = Quaternion.AngleAxis(90, Vector3.up) * rotatedPosition;
-        tempBound = new Vector3(tempBound.z, tempBound.y, tempBound.x);
-        rotatedPosition = rotatedPosition + (tempBound / 2);
-        relativeIndex = rotatedPosition;
-    }
-
 
     public Room getConnectedRoom()
     {

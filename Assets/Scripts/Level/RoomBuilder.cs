@@ -12,6 +12,7 @@ public class RoomBuilder : MonoBehaviour {
     public float relativeChance;
     public BlockData[] blocks;
     List<Door> doorObjects = new List<Door>();
+    List<DoorMono> doorGameObjects = new List<DoorMono>();
     private GameObject lastParent;
     private List<GameObject> lastBlocks = new List<GameObject>();
     // Use this for initialization
@@ -41,6 +42,10 @@ public class RoomBuilder : MonoBehaviour {
             checkBounds(ref lowerBounds, ref upperBounds, block.index);
         }
         Debug.Log("Low: " + lowerBounds + " Upper: " + upperBounds);
+
+        //Center room on x,z(0,0)
+        //Vector3 mid = upperBounds - lowerBounds;
+
         for (int i = 0; i < blocks.Length; i++)
         {
             if(lowerBounds != Vector3.zero)
@@ -79,8 +84,11 @@ public class RoomBuilder : MonoBehaviour {
             }
         }
         Vector3 dimensions = new Vector3(Mathf.Abs(lowerBounds.x - upperBounds.x)+1, Mathf.Abs(lowerBounds.y - upperBounds.y)+1, Mathf.Abs(lowerBounds.z - upperBounds.z)+1);
-        Room room = new Room(RoomName,relativeChance.ToString(),dimensions,lowerBounds,upperBounds,doorObjects);
-        SaveToXML(room);
+
+
+        //Room room = new Room(RoomName,relativeChance.ToString(),dimensions,lowerBounds,upperBounds,doorObjects);
+        RoomMono room = lastParent.AddComponent<RoomMono>();
+        room.init(1, RoomName, relativeChance, dimensions, lowerBounds, upperBounds);
         DoCreateSimplePrefab(lastParent.transform);
     }
 
@@ -89,7 +97,7 @@ public class RoomBuilder : MonoBehaviour {
         RoomMono room = lastParent.GetComponent<RoomMono>();
         if(room != null)
         {
-            room.rotate90DegClockwise(1);
+            room.rotateData_90Deg(1);
         }
     }
 
@@ -120,6 +128,12 @@ public class RoomBuilder : MonoBehaviour {
                 relativeIndex += new Vector3(0, ope.yChange, 0);
                 Door newDoor = new Door(relativeIndex, ope.direction);
                 doorObjects.Add(newDoor);
+
+                GameObject door = new GameObject();
+                door.transform.parent = lastParent.transform;
+                door.transform.name = "Door " + relativeIndex;
+                door.AddComponent<DoorMono>();
+                door.transform.position = relativeIndex;
             }
         }
     }
