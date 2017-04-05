@@ -4,29 +4,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-[XmlType("Door")]
+[System.Serializable]
 public class Door
 {
-    [XmlElement("DoorDirection")]
-    private DoorDirection direction;
-    [XmlElement("LocalIndex")]
-    private SerializableVector3 relativeIndex;
-    [XmlElement("WorldIndex")]
-    private SerializableVector3 worldIndex;
-    
-    [XmlIgnoreAttribute]
-    private Room room;
-    [XmlIgnoreAttribute]
-    private Room connectedRoom;
+    public DoorDirection Direction { get; set; }
+    public SerializableVector3 RelativeIndex { get; set; }
+    public SerializableVector3 WorldIndex { get; set; }
 
     [XmlIgnoreAttribute]
-    private GameObject physicalDoor;
+    public RoomData Room { get; set; }
     [XmlIgnoreAttribute]
-    public GameObject leftDoor { get; set; }
-    [XmlIgnoreAttribute]
-    public GameObject rightDoor { get; set; }
-    [XmlIgnoreAttribute]
-    public bool isClosed { get; set; }
+    public RoomData ConnectedRoom { get; set; }
 
     public Door()
     {
@@ -35,105 +23,39 @@ public class Door
 
     public Door(Vector3 relativeIndex, DoorDirection direction)
     {
-        this.relativeIndex = relativeIndex;
-        this.direction = direction;
+        this.RelativeIndex = relativeIndex;
+        this.Direction = direction;
     }
 
-    public Door(Room room, Vector3 relativeIndex)
+    public Door(RoomData room, Vector3 relativeIndex)
     {
-        this.room = room;
-        this.relativeIndex = relativeIndex;
+        this.Room = room;
+        this.RelativeIndex = relativeIndex;
     }
 
-    public void initDoor(Room connectedRoom, DoorDirection direction, Vector3 worldIndex)
+    public void initDoor(RoomData connectedRoom, DoorDirection direction, Vector3 worldIndex)
     {
-        this.connectedRoom = connectedRoom;
-        this.direction = direction;
-        this.worldIndex = worldIndex;
-        isClosed = true;
+        this.ConnectedRoom = connectedRoom;
+        this.Direction = direction;
+        this.WorldIndex = worldIndex;
     }
 
     public Door(Door other)
     {
-        this.connectedRoom = other.getConnectedRoom();
-        this.direction = other.getDirection();
-        this.relativeIndex = other.getRelativeDoorIndex();
-        this.worldIndex = other.getWorldDoorIndex();
-        this.physicalDoor = other.getPhysicalDoor();
+        this.Room = other.Room;
+        this.ConnectedRoom = other.ConnectedRoom;
+        this.Direction = other.Direction;
+        this.RelativeIndex = other.RelativeIndex;
+        this.WorldIndex = other.WorldIndex;
     }
 
     public void rotateDoorIndex(Vector3 tempBound)
     {
-        Vector3 rotatedPosition = relativeIndex - tempBound / 2;
+        Vector3 rotatedPosition = RelativeIndex - tempBound / 2;
 
         rotatedPosition = Quaternion.AngleAxis(90, Vector3.up) * rotatedPosition;
         tempBound = new Vector3(tempBound.z, tempBound.y, tempBound.x);
         rotatedPosition = rotatedPosition + (tempBound / 2);
-        relativeIndex = rotatedPosition;
-    }
-
-
-    public Room getConnectedRoom()
-    {
-        return this.connectedRoom;
-    }
-
-    public DoorDirection getDirection()
-    {
-        return this.direction;
-    }
-
-    public Vector3 getRelativeDoorIndex()
-    {
-        return this.relativeIndex;
-    }
-
-    public Vector3 getWorldDoorIndex()
-    {
-        return this.worldIndex;
-    }
-
-    public void setPhysicalDoor(GameObject physDoor)
-    {
-        this.physicalDoor = physDoor;
-    }
-
-    public GameObject getPhysicalDoor()
-    {
-        return this.physicalDoor;
-    }
-
-    public void FastClose()
-    {
-        if (isClosed == false)
-        {
-            isClosed = true;
-            Transform leftDoorTrans = leftDoor.transform;
-            Transform rightDoorTrans = rightDoor.transform;
-            Vector3 startPosLeft = leftDoorTrans.localPosition;
-            Vector3 startPosRight = rightDoorTrans.localPosition;
-            leftDoorTrans.localPosition = startPosLeft + Vector3.right * 1.1f;
-            rightDoorTrans.localPosition = startPosRight + Vector3.right * -1.1f;
-
-            Door connectedDoor = connectedRoom.doors.Find(d => (int)d.getDirection() == ((int)getDirection() + 2) % 4);
-            connectedDoor.FastClose();
-        }
-    }
-
-    public void FastOpen()
-    {
-        if (isClosed == true)
-        {
-            isClosed = false;
-            Transform leftDoorTrans = leftDoor.transform;
-            Transform rightDoorTrans = rightDoor.transform;
-            Vector3 startPosLeft = leftDoorTrans.localPosition;
-            Vector3 startPosRight = rightDoorTrans.localPosition;
-            leftDoorTrans.localPosition = startPosLeft + Vector3.right * -1.1f;
-            rightDoorTrans.localPosition = startPosRight + Vector3.right * 1.1f;
-
-            Door connectedDoor = connectedRoom.doors.Find(d => (int)d.getDirection() == ((int)getDirection() + 2) % 4);
-            connectedDoor.FastOpen();
-        }
+        RelativeIndex = rotatedPosition;
     }
 }

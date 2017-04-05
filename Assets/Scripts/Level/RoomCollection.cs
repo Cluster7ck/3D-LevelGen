@@ -13,7 +13,7 @@ public class RoomCollection
     public float baseSize;
 
     [XmlArray("Rooms"), XmlArrayItem("Room")]
-    public Room[] rooms;
+    public RoomData[] rooms;
 
     public void Save(string path)
     {
@@ -59,15 +59,16 @@ public class RoomCollection
     */
     public void PostDeserialization()
     {
+        /*
         baseSize = float.Parse(baseSizeString, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-        Room.baseSize = baseSize;
+        RoomData.baseSize = baseSize;
         if (rooms != null)
         {
-            foreach (Room room in rooms)
+            foreach (RoomData room in rooms)
             {
                 room.PostDeserialization();
             }
-        }
+        }*/
     }
 
     public int getNumberRooms()

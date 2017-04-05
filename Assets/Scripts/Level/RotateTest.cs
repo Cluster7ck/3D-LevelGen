@@ -35,7 +35,6 @@ public class RotateTest : MonoBehaviour {
 
     public void rotateRoom()
     {
-        room.rotateData_90Deg(1);
-        room.rotateGameObject();
+        room.rotate90Deg(1);
     }
 }

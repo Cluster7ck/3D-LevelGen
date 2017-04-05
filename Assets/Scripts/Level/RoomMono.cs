@@ -26,26 +26,25 @@ public class RoomMono : MonoBehaviour {
         this.upperBound = upperBound;
     }
 
-    public void rotateData_90Deg(int rotations)
+    public void rotate90Deg(int rotations)
     {
         
         for (int i = 0; i < rotations; i++)
         {
             rotation = (rotation + 90) % 360;
-            List<Vector3> rotatedDoors = new List<Vector3>();
+
             foreach (Door door in doors)
             {
-                //Set door index dor.setRellativeIndex()
                 door.rotateDoorIndex(upperBound);
             }
 
             upperBound = new Vector3(upperBound.z, upperBound.y, upperBound.x);
             dimensions = new Vector3(dimensions.z, dimensions.y, dimensions.x);
         }
-        
+        rotateGameObject();
     }
 
-    public void rotateGameObject()
+    private void rotateGameObject()
     {
         this.transform.rotation = new Quaternion();
         this.transform.Rotate(Vector3.up, rotation);

@@ -13,8 +13,9 @@ public class RoomBuilder : MonoBehaviour {
     public BlockData[] blocks;
     List<Door> doorObjects = new List<Door>();
     List<DoorMono> doorGameObjects = new List<DoorMono>();
-    private GameObject lastParent;
-    private List<GameObject> lastBlocks = new List<GameObject>();
+
+    private GameObject parentObject;
+    private List<GameObject> blockObjects = new List<GameObject>();
     // Use this for initialization
     void Start()
     {
@@ -30,27 +31,22 @@ public class RoomBuilder : MonoBehaviour {
     public void buildRoom()
     {
         deleteLast();
-        lastParent = new GameObject(RoomName);
+        parentObject = new GameObject(RoomName);
 
         //Check the bounds of the Room. Then move all tiles over, so that the bottom left is at 0,0
         Vector3 lowerBounds = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         Vector3 upperBounds = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-        //Room room = new Room();
 
         foreach (BlockData block in blocks)
         {
             checkBounds(ref lowerBounds, ref upperBounds, block.index);
         }
-        Debug.Log("Low: " + lowerBounds + " Upper: " + upperBounds);
-
-        //Center room on x,z(0,0)
-        //Vector3 mid = upperBounds - lowerBounds;
 
         for (int i = 0; i < blocks.Length; i++)
         {
             if(lowerBounds != Vector3.zero)
             {
-                blocks[i].index = blocks[i].index - lowerBounds; //new Vector3(Mathf.Abs(lowerBounds.x), Mathf.Abs(lowerBounds.y), Mathf.Abs(lowerBounds.z));
+                blocks[i].index = blocks[i].index - lowerBounds;
             }
         }
         //Bounds have to be recalculated, so the Doors can be placed
@@ -60,11 +56,6 @@ public class RoomBuilder : MonoBehaviour {
         {
             checkBounds(ref lowerBounds, ref upperBounds, block.index);
         }
-        
-        /*lowerBounds = Vector3.zero;
-        upperBounds = upperBounds - lowerBounds;*/
-        Debug.Log("After relocate");
-        Debug.Log("Low: " + lowerBounds + " Upper: " + upperBounds);
 
 
         int count = 1;
@@ -72,11 +63,11 @@ public class RoomBuilder : MonoBehaviour {
         {
             if(block.type != null)
             {
-                GameObject instance = Instantiate(block.type, block.index, new Quaternion(), lastParent.transform) as GameObject;
+                GameObject instance = Instantiate(block.type, block.index, new Quaternion(), parentObject.transform) as GameObject;
                 Block blockScript = instance.GetComponent<Block>();
                 blockScript.rotate(block.rotation);
                 instance.transform.name = count.ToString()+". "+ instance.name.Split('(')[0] + " (" + (int)block.index.x + ", " + (int)block.index.y + ", " + (int)block.index.z + ")";
-                lastBlocks.Add(instance);
+                blockObjects.Add(instance);
 
                 checkForDoors(block, blockScript, lowerBounds, upperBounds);
 
@@ -85,19 +76,19 @@ public class RoomBuilder : MonoBehaviour {
         }
         Vector3 dimensions = new Vector3(Mathf.Abs(lowerBounds.x - upperBounds.x)+1, Mathf.Abs(lowerBounds.y - upperBounds.y)+1, Mathf.Abs(lowerBounds.z - upperBounds.z)+1);
 
+        RoomData roomData = new RoomData(RoomName, relativeChance, dimensions, lowerBounds, upperBounds, doorObjects);
 
-        //Room room = new Room(RoomName,relativeChance.ToString(),dimensions,lowerBounds,upperBounds,doorObjects);
-        RoomMono room = lastParent.AddComponent<RoomMono>();
-        room.init(1, RoomName, relativeChance, dimensions, lowerBounds, upperBounds);
-        DoCreateSimplePrefab(lastParent.transform);
+        //XML serialize the room or create Room object from data
+        SaveToXML(roomData);
+        CreateSimplePrefab(parentObject.transform);
     }
 
     void rotateRoom()
     {
-        RoomMono room = lastParent.GetComponent<RoomMono>();
+        RoomMono room = parentObject.GetComponent<RoomMono>();
         if(room != null)
         {
-            room.rotateData_90Deg(1);
+            room.rotate90Deg(1);
         }
     }
 
@@ -130,23 +121,12 @@ public class RoomBuilder : MonoBehaviour {
                 doorObjects.Add(newDoor);
 
                 GameObject door = new GameObject();
-                door.transform.parent = lastParent.transform;
+                door.transform.parent = parentObject.transform;
                 door.transform.name = "Door " + relativeIndex;
                 door.AddComponent<DoorMono>();
                 door.transform.position = relativeIndex;
             }
         }
-    }
-
-    bool isAtEdge(BlockData block, Vector3 lowerBounds, Vector3 upperBounds)
-    {
-        if((block.index.x == lowerBounds.x || block.index.x == upperBounds.x) ||
-           (block.index.z == lowerBounds.z || block.index.z == upperBounds.z ))
-        {
-            return true;
-        }
-
-        return false;
     }
 
     void checkBounds(ref Vector3 lowerBounds, ref Vector3 upperBounds, Vector3 checkVec) {
@@ -179,12 +159,12 @@ public class RoomBuilder : MonoBehaviour {
 
     public void deleteLast()
     {
-        lastBlocks.Clear();
+        blockObjects.Clear();
         doorObjects.Clear();
-        DestroyImmediate(lastParent);
+        DestroyImmediate(parentObject);
     }
 
-    static void DoCreateSimplePrefab(Transform transform)
+    static void CreateSimplePrefab(Transform transform)
     {
         Object prefab = null;
 
@@ -203,36 +183,31 @@ public class RoomBuilder : MonoBehaviour {
         }
     }
 
-    void SaveToXML(Room room)
+    void SaveToXML(RoomData room)
     {
-        XmlSerializer xsSubmit = new XmlSerializer(typeof(Room));
-        var xml = "";
+        XmlSerializer serializer = new XmlSerializer(typeof(RoomData));
+        FileStream stream = new FileStream(Application.dataPath + "/StreamingAssets/XML/" + room.Name + ".xml", FileMode.Create);
 
-        using (StreamWriter file = File.AppendText("Assets/StreamingAssets/XML/" + room.name+".xml"))
-        {
-            using (XmlWriter writer = XmlWriter.Create(file))
-            {
-                xsSubmit.Serialize(writer, room);
-            }
-        }
+        serializer.Serialize(stream, room);
+        stream.Close();
     }
 
 
     void OnDrawGizmos()
     {
-        if(lastParent != null)
+        if(parentObject != null)
         {
             Gizmos.color = Color.green;
             foreach (Door door in doorObjects)
             {
-                Gizmos.DrawCube(door.getRelativeDoorIndex(), new Vector3(1, 0.1f, 1));
+                Gizmos.DrawCube(door.RelativeIndex, new Vector3(1, 0.1f, 1));
             }
         }
     }
 
     public GameObject getLastParent()
     {
-        return lastParent;
+        return parentObject;
     }
 
     [System.Serializable]

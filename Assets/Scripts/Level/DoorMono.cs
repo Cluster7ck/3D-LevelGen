@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DoorMono : MonoBehaviour {
-    
+    /*
     private DoorDirection direction;
     private SerializableVector3 relativeIndex;
     private SerializableVector3 worldIndex;
     
-    private Room room;
-    private Room connectedRoom;
+    private RoomData room;
+    private RoomData connectedRoom;
     
     private GameObject physicalDoor;
     public GameObject leftDoor { get; set; }
     public GameObject rightDoor { get; set; }
     public bool isClosed { get; set; }
 
-    public void initDoor(Room connectedRoom, DoorDirection direction, Vector3 worldIndex)
+    public void initDoor(RoomData connectedRoom, DoorDirection direction, Vector3 worldIndex)
     {
         this.connectedRoom = connectedRoom;
         this.direction = direction;
@@ -24,7 +24,7 @@ public class DoorMono : MonoBehaviour {
         isClosed = true;
     }
 
-    public Room getConnectedRoom()
+    public RoomData getConnectedRoom()
     {
         return this.connectedRoom;
     }
@@ -86,5 +86,5 @@ public class DoorMono : MonoBehaviour {
             Door connectedDoor = connectedRoom.doors.Find(d => (int)d.getDirection() == ((int)getDirection() + 2) % 4);
             connectedDoor.FastOpen();
         }
-    }
+    }*/
 }
