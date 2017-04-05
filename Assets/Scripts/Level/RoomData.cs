@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Globalization;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
@@ -9,7 +10,22 @@ public class RoomData : System.IEquatable<RoomData>
 {
     public string Name { get; set; }
     public int Rotation { get; set; }
-    public float RelativeChance { get; set; }
+
+    //float serialization is weird
+    private float _relativeChance;
+    [XmlIgnore]
+    public float RelativeChance
+    {
+        get { return _relativeChance; }
+        set { _relativeChance = value; }
+    }
+
+    [XmlElement("RelativeChance")]
+    public string CustomRelativeChance
+    {
+        get { return RelativeChance.ToString("#0.00", CultureInfo.InvariantCulture); }
+        set { float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _relativeChance); }
+    }
 
     //Need bounds for y levels. Dimensions enough for xz indices
     public SerializableVector3 Dimensions { get; set; }
@@ -29,6 +45,7 @@ public class RoomData : System.IEquatable<RoomData>
 
     public RoomData()
     {
+        doors = new List<Door>();
     }
 
     public RoomData(string name, float RelativeChance, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound, List<Door> doors)
@@ -52,7 +69,7 @@ public class RoomData : System.IEquatable<RoomData>
         this.Dimensions = other.Dimensions;
         this.WorldPosition = other.WorldPosition;
 
-        this.doors = new List<Door>(doors.Count);
+        this.doors = new List<Door>(other.doors.Count);
         foreach (Door door in other.doors)
         {
             this.doors.Add(new Door(door));

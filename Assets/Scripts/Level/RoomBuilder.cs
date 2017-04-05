@@ -185,11 +185,9 @@ public class RoomBuilder : MonoBehaviour {
 
     void SaveToXML(RoomData room)
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(RoomData));
-        FileStream stream = new FileStream(Application.dataPath + "/StreamingAssets/XML/" + room.Name + ".xml", FileMode.Create);
-
-        serializer.Serialize(stream, room);
-        stream.Close();
+        RoomCollection.Instance.BaseSize = 1;
+        RoomCollection.Instance.rooms.Add(room);
+        RoomCollection.Instance.Save(Application.dataPath + "/StreamingAssets/XML/room_collection.xml");
     }
 
 

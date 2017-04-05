@@ -1,22 +1,51 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 
-[XmlRoot("Modules")]
+[XmlRoot("RoomCollection")]
 public class RoomCollection
 {
-    [XmlElement("BaseSize")]
-    public string baseSizeString;
 
-    public float baseSize;
+    private float _baseSize;
+    [XmlIgnore]
+    public float BaseSize
+    {
+        get { return _baseSize; }
+        set { _baseSize = value; }
+    }
+
+    [XmlElement("BaseSize")]
+    public string CustomBaseSize
+    {
+        get { return BaseSize.ToString("#0.00", CultureInfo.InvariantCulture); }
+        set { float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _baseSize); }
+    }
 
     [XmlArray("Rooms"), XmlArrayItem("Room")]
-    public RoomData[] rooms;
+    public List<RoomData> rooms = new List<RoomData>();
+    private static RoomCollection instance;
+
+    private RoomCollection() { }
+
+    public static RoomCollection Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new RoomCollection();
+            }
+            return instance;
+        }
+    }
 
     public void Save(string path)
     {
+        Load(path);
+
         var serializer = new XmlSerializer(typeof(RoomCollection));
 
         using (var stream = new FileStream(path, FileMode.Create))
@@ -25,13 +54,24 @@ public class RoomCollection
         }
     }
 
-    public static RoomCollection Load(string path)
+    public void Load(string path)
     {
         var serializer = new XmlSerializer(typeof(RoomCollection));
-
+        RoomCollection rc = null;
         using (var stream = new FileStream(path, FileMode.Open))
         {
-            return serializer.Deserialize(stream) as RoomCollection;
+            rc = serializer.Deserialize(stream) as RoomCollection;
+        }
+        if(rc != null)
+        {
+            foreach (RoomData rd in rc.rooms)
+            {
+                if (!rooms.Contains(rd))
+                {
+                    rooms.Add(rd);
+                }
+            }
+
         }
     }
 
@@ -57,27 +97,9 @@ public class RoomCollection
         }
     }
     */
-    public void PostDeserialization()
-    {
-        /*
-        baseSize = float.Parse(baseSizeString, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-        RoomData.baseSize = baseSize;
-        if (rooms != null)
-        {
-            foreach (RoomData room in rooms)
-            {
-                room.PostDeserialization();
-            }
-        }*/
-    }
 
     public int getNumberRooms()
     {
-        return this.rooms.Length;
-    }
-
-    public float getBaseSize()
-    {
-        return this.baseSize;
+        return this.rooms.Count;
     }
 }
