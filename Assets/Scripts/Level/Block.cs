@@ -13,7 +13,10 @@ public class Block : MonoBehaviour {
         //DoorDirection[] rotatedOpenings = new DoorDirection[openings.Length];
         for(int i = 0; i < openings.Length; i++)
         {
-            openings[i].direction = (DoorDirection)(((int)openings[i].direction + rot90Deg)%4);
+            if(openings[i].direction != DoorDirection.UP && openings[i].direction != DoorDirection.DOWN)
+            {
+                openings[i].direction = (DoorDirection)(((int)openings[i].direction + rot90Deg) % 4);
+            }
         }
     }
 
@@ -21,5 +24,6 @@ public class Block : MonoBehaviour {
     public struct Openings{
         public DoorDirection direction;
         public float yChange;
+        public RoomType type;
     }
 }

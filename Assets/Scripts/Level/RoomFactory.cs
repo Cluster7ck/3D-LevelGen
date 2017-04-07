@@ -26,6 +26,6 @@ public class RoomFactory {
 
     RoomData CreateRoomDataObject(RoomMono roomMono)
     {
-        return new RoomData(roomMono.name, roomMono.relativeChance, roomMono.dimensions, roomMono.lowerBound, roomMono.upperBound, roomMono.doors);
+        return new RoomData(roomMono.name, roomMono.type, roomMono.relativeChance, roomMono.dimensions, roomMono.lowerBound, roomMono.upperBound, roomMono.doors);
     }
 }

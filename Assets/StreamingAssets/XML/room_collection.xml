@@ -4,6 +4,7 @@
     <Room>
       <Doors>
         <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>WEST</Direction>
           <RelativeIndex>
             <x>-1</x>
@@ -17,19 +18,7 @@
           </WorldIndex>
         </Door>
         <Door>
-          <Direction>EAST</Direction>
-          <RelativeIndex>
-            <x>3</x>
-            <y>1</y>
-            <z>1</z>
-          </RelativeIndex>
-          <WorldIndex>
-            <x>0</x>
-            <y>0</y>
-            <z>0</z>
-          </WorldIndex>
-        </Door>
-        <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>SOUTH</Direction>
           <RelativeIndex>
             <x>1</x>
@@ -43,6 +32,100 @@
           </WorldIndex>
         </Door>
         <Door>
+          <DoorType>STANDARD</DoorType>
+          <Direction>NORTH</Direction>
+          <RelativeIndex>
+            <x>1</x>
+            <y>1</y>
+            <z>3</z>
+          </RelativeIndex>
+          <WorldIndex>
+            <x>0</x>
+            <y>0</y>
+            <z>0</z>
+          </WorldIndex>
+        </Door>
+        <Door>
+          <DoorType>STANDARD</DoorType>
+          <Direction>EAST</Direction>
+          <RelativeIndex>
+            <x>4</x>
+            <y>1</y>
+            <z>1</z>
+          </RelativeIndex>
+          <WorldIndex>
+            <x>0</x>
+            <y>0</y>
+            <z>0</z>
+          </WorldIndex>
+        </Door>
+      </Doors>
+      <Name>FourthRoom</Name>
+      <Type>STANDARD</Type>
+      <Rotation>0</Rotation>
+      <RelativeChance>1.00</RelativeChance>
+      <Dimensions>
+        <x>4</x>
+        <y>2</y>
+        <z>3</z>
+      </Dimensions>
+      <UpperBounds>
+        <x>3</x>
+        <y>1</y>
+        <z>2</z>
+      </UpperBounds>
+      <LowerBounds>
+        <x>0</x>
+        <y>0</y>
+        <z>0</z>
+      </LowerBounds>
+    </Room>
+    <Room>
+      <Doors>
+        <Door>
+          <DoorType>STANDARD</DoorType>
+          <Direction>WEST</Direction>
+          <RelativeIndex>
+            <x>-1</x>
+            <y>1</y>
+            <z>1</z>
+          </RelativeIndex>
+          <WorldIndex>
+            <x>0</x>
+            <y>0</y>
+            <z>0</z>
+          </WorldIndex>
+        </Door>
+        <Door>
+          <DoorType>STANDARD</DoorType>
+          <Direction>EAST</Direction>
+          <RelativeIndex>
+            <x>3</x>
+            <y>1</y>
+            <z>1</z>
+          </RelativeIndex>
+          <WorldIndex>
+            <x>0</x>
+            <y>0</y>
+            <z>0</z>
+          </WorldIndex>
+        </Door>
+        <Door>
+          <DoorType>STANDARD</DoorType>
+          <Direction>SOUTH</Direction>
+          <RelativeIndex>
+            <x>1</x>
+            <y>1</y>
+            <z>-1</z>
+          </RelativeIndex>
+          <WorldIndex>
+            <x>0</x>
+            <y>0</y>
+            <z>0</z>
+          </WorldIndex>
+        </Door>
+        <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>NORTH</Direction>
           <RelativeIndex>
             <x>1</x>
@@ -57,6 +140,7 @@
         </Door>
       </Doors>
       <Name>SecondRoom</Name>
+      <Type>STANDARD</Type>
       <Rotation>0</Rotation>
       <RelativeChance>0.00</RelativeChance>
       <Dimensions>
@@ -78,6 +162,7 @@
     <Room>
       <Doors>
         <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>WEST</Direction>
           <RelativeIndex>
             <x>-1</x>
@@ -91,6 +176,7 @@
           </WorldIndex>
         </Door>
         <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>SOUTH</Direction>
           <RelativeIndex>
             <x>1</x>
@@ -104,6 +190,7 @@
           </WorldIndex>
         </Door>
         <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>NORTH</Direction>
           <RelativeIndex>
             <x>1</x>
@@ -117,6 +204,7 @@
           </WorldIndex>
         </Door>
         <Door>
+          <DoorType>STANDARD</DoorType>
           <Direction>EAST</Direction>
           <RelativeIndex>
             <x>4</x>
@@ -131,80 +219,7 @@
         </Door>
       </Doors>
       <Name>ThirdRoom</Name>
-      <Rotation>0</Rotation>
-      <RelativeChance>0.00</RelativeChance>
-      <Dimensions>
-        <x>4</x>
-        <y>2</y>
-        <z>3</z>
-      </Dimensions>
-      <UpperBounds>
-        <x>0</x>
-        <y>0</y>
-        <z>0</z>
-      </UpperBounds>
-      <LowerBounds>
-        <x>0</x>
-        <y>0</y>
-        <z>0</z>
-      </LowerBounds>
-    </Room>
-    <Room>
-      <Doors>
-        <Door>
-          <Direction>WEST</Direction>
-          <RelativeIndex>
-            <x>-1</x>
-            <y>1</y>
-            <z>1</z>
-          </RelativeIndex>
-          <WorldIndex>
-            <x>0</x>
-            <y>0</y>
-            <z>0</z>
-          </WorldIndex>
-        </Door>
-        <Door>
-          <Direction>SOUTH</Direction>
-          <RelativeIndex>
-            <x>1</x>
-            <y>1</y>
-            <z>-1</z>
-          </RelativeIndex>
-          <WorldIndex>
-            <x>0</x>
-            <y>0</y>
-            <z>0</z>
-          </WorldIndex>
-        </Door>
-        <Door>
-          <Direction>NORTH</Direction>
-          <RelativeIndex>
-            <x>1</x>
-            <y>1</y>
-            <z>3</z>
-          </RelativeIndex>
-          <WorldIndex>
-            <x>0</x>
-            <y>0</y>
-            <z>0</z>
-          </WorldIndex>
-        </Door>
-        <Door>
-          <Direction>EAST</Direction>
-          <RelativeIndex>
-            <x>4</x>
-            <y>1</y>
-            <z>1</z>
-          </RelativeIndex>
-          <WorldIndex>
-            <x>0</x>
-            <y>0</y>
-            <z>0</z>
-          </WorldIndex>
-        </Door>
-      </Doors>
-      <Name>FourthRoom</Name>
+      <Type>STANDARD</Type>
       <Rotation>0</Rotation>
       <RelativeChance>0.00</RelativeChance>
       <Dimensions>
@@ -224,5 +239,5 @@
       </LowerBounds>
     </Room>
   </Rooms>
-  <BaseSize>0.00</BaseSize>
+  <BaseSize>1.00</BaseSize>
 </RoomCollection>

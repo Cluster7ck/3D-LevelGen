@@ -6,6 +6,7 @@ public class RoomMono : MonoBehaviour {
     public float baseSize;
 
     public string roomName;
+    public RoomType type;
     public int rotation;
     public float relativeChance;
 

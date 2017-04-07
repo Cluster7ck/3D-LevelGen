@@ -4,11 +4,21 @@ using System.Globalization;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
+public enum RoomType
+{
+    STANDARD,
+    HOUSE,
+    STREET
+}
+
 [System.Serializable]
 [XmlInclude(typeof(Door))]
 public class RoomData : System.IEquatable<RoomData>
 {
+    static public float BaseSize;
+
     public string Name { get; set; }
+    public RoomType Type { get; set; }
     public int Rotation { get; set; }
 
     //float serialization is weird
@@ -48,9 +58,10 @@ public class RoomData : System.IEquatable<RoomData>
         doors = new List<Door>();
     }
 
-    public RoomData(string name, float RelativeChance, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound, List<Door> doors)
+    public RoomData(string name, RoomType type, float RelativeChance, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound, List<Door> doors)
     {
         this.Name = name;
+        this.Type = type;
         this.RelativeChance = RelativeChance;
         this.Dimensions = dimensions;
         this.LowerBounds = lowerBound;
@@ -65,6 +76,7 @@ public class RoomData : System.IEquatable<RoomData>
     public RoomData(RoomData other)
     {
         this.Name = other.Name;
+        this.Type = other.Type;
         this.Rotation = other.Rotation;
         this.Dimensions = other.Dimensions;
         this.WorldPosition = other.WorldPosition;

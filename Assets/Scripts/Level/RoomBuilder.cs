@@ -9,6 +9,7 @@ using System.Xml;
 public class RoomBuilder : MonoBehaviour {
 
     public string RoomName;
+    public RoomType type;
     public float relativeChance;
     public BlockData[] blocks;
     List<Door> doorObjects = new List<Door>();
@@ -76,7 +77,7 @@ public class RoomBuilder : MonoBehaviour {
         }
         Vector3 dimensions = new Vector3(Mathf.Abs(lowerBounds.x - upperBounds.x)+1, Mathf.Abs(lowerBounds.y - upperBounds.y)+1, Mathf.Abs(lowerBounds.z - upperBounds.z)+1);
 
-        RoomData roomData = new RoomData(RoomName, relativeChance, dimensions, lowerBounds, upperBounds, doorObjects);
+        RoomData roomData = new RoomData(RoomName, type, relativeChance, dimensions, lowerBounds, upperBounds, doorObjects);
 
         //XML serialize the room or create Room object from data
         SaveToXML(roomData);
@@ -119,12 +120,6 @@ public class RoomBuilder : MonoBehaviour {
                 relativeIndex += new Vector3(0, ope.yChange, 0);
                 Door newDoor = new Door(relativeIndex, ope.direction);
                 doorObjects.Add(newDoor);
-
-                GameObject door = new GameObject();
-                door.transform.parent = parentObject.transform;
-                door.transform.name = "Door " + relativeIndex;
-                door.AddComponent<DoorMono>();
-                door.transform.position = relativeIndex;
             }
         }
     }
