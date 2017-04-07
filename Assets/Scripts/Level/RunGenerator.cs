@@ -2,14 +2,9 @@
 using System.Collections;
 
 public class RunGenerator : MonoBehaviour {
-
+    
 	// Use this for initialization
 	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+        this.GetComponent<LevelGen3D>().GenerateLevel();
+    }
 }

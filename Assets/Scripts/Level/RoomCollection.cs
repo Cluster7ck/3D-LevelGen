@@ -44,7 +44,10 @@ public class RoomCollection
 
     public void Save(string path)
     {
-        Load(path);
+        if (File.Exists(path))
+        {
+            Load(path);
+        }
 
         var serializer = new XmlSerializer(typeof(RoomCollection));
 
@@ -72,6 +75,18 @@ public class RoomCollection
                 }
             }
 
+        }
+        postDeserialization();
+    }
+
+    void postDeserialization()
+    {
+        foreach(RoomData room in rooms)
+        {
+            foreach(Door door in room.doors)
+            {
+                door.Room = room;
+            }
         }
     }
 

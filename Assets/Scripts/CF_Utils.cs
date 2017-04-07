@@ -61,4 +61,25 @@ public static class Extensions
     {
         return (DoorDirection)(((int)direction + 1) % 4);
     }
+
+    public static DoorDirection opposite(this DoorDirection direction)
+    {
+        switch (direction)
+        {
+            case DoorDirection.NORTH:
+                return DoorDirection.SOUTH;
+            case DoorDirection.EAST:
+                return DoorDirection.WEST;
+            case DoorDirection.SOUTH:
+                return DoorDirection.NORTH;
+            case DoorDirection.WEST:
+                return DoorDirection.EAST;
+            case DoorDirection.UP:
+                return DoorDirection.DOWN;
+            case DoorDirection.DOWN:
+                return DoorDirection.UP;
+            default:
+                return DoorDirection.NORTH;
+        }
+    }
 }

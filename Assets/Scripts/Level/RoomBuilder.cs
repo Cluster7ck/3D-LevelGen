@@ -17,6 +17,7 @@ public class RoomBuilder : MonoBehaviour {
 
     private GameObject parentObject;
     private List<GameObject> blockObjects = new List<GameObject>();
+    private RoomData room;
     // Use this for initialization
     void Start()
     {
@@ -77,10 +78,14 @@ public class RoomBuilder : MonoBehaviour {
         }
         Vector3 dimensions = new Vector3(Mathf.Abs(lowerBounds.x - upperBounds.x)+1, Mathf.Abs(lowerBounds.y - upperBounds.y)+1, Mathf.Abs(lowerBounds.z - upperBounds.z)+1);
 
-        RoomData roomData = new RoomData(RoomName, type, relativeChance, dimensions, lowerBounds, upperBounds, doorObjects);
+        room = new RoomData(RoomName, type, relativeChance, dimensions, lowerBounds, upperBounds, doorObjects);
+        
 
-        //XML serialize the room or create Room object from data
-        SaveToXML(roomData);
+    }
+
+    public void SaveRoom()
+    {
+        SaveToXML(room);
         CreateSimplePrefab(parentObject.transform);
     }
 

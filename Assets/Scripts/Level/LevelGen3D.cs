@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class LevelGen3D : MonoBehaviour {
 
-    public int Seed { get; set; }
-    public string StartRoom { get; set;}
-    public int MinimumAmountRooms { get; set; }
+
+
+    public int Seed;
+    public string StartRoom;
+    public int MinimumAmountRooms;
 
     Transform roomParentTransform;
     RoomCollection roomCollection;
@@ -29,6 +31,7 @@ public class LevelGen3D : MonoBehaviour {
     {
         roomParentTransform = new GameObject("Level").transform;
         roomCollection = RoomCollection.Instance;
+        roomCollection.Load(Application.dataPath + "/StreamingAssets/XML/room_collection.xml");
         RoomData.BaseSize = roomCollection.BaseSize;
     }
 
@@ -47,10 +50,14 @@ public class LevelGen3D : MonoBehaviour {
         //Add 4 or 3 opening room
         while (openRoomQueue.Any())
         {
-            if (allRooms.Count() >= MinimumAmountRooms || allRooms.Count() + numOpenDoors() >= MinimumAmountRooms)
+            //|| allRooms.Count() + numOpenDoors() >= MinimumAmountRooms
+            if (allRooms.Count() >= MinimumAmountRooms )
             { 
             }
-            cycleOverRoom();
+            else
+            {
+                cycleOverRoom();
+            }
         }
     }
 
@@ -68,80 +75,46 @@ public class LevelGen3D : MonoBehaviour {
         {
             List<RoomData> roomsToChooseFrom = roomsByType(door.RoomType);
             RoomData nextRoom = randomWeightedRoom(roomsToChooseFrom);
+            Vector3 nextRoomIndex = Vector3.zero;
             Door nextDoor = null;
             bool roomFits = false;
             while (!roomFits)
             {
                 //Roate RoomData until there is a door on the corresponding side
                 int rotations = 0;
-                bool hasFittingDoor = false;
-                while (!hasFittingDoor && rotations<4)
+
+                bool fits = false;
+                while (!fits && rotations<4)
                 {
                     if (checkRotationFit(nextRoom,door, ref nextDoor))
                     {
-                        hasFittingDoor = true;
+                        {
+                            nextRoomIndex = placeRoom(currentRoom, nextRoom, door, nextDoor);
+                            if (nextRoomIndex != Vector3.zero)
+                            {
+                                fits = checkNeighbors(nextRoom, nextRoomIndex, currentRoom);
+                            }
+                        }
                     }
-                    else
+
+                    if(!fits)
                     {
                         rotations++;
                         nextRoom.rotateData_90Deg(1);
                     }
                 }
 
-                if (hasFittingDoor && nextDoor != null)
+                if (fits)
                 {
-                    //see if dimensions fit
-                    Vector3 nextRoomIndex = placeRoom(currentRoom, nextRoom, door, nextDoor);
+                    addRoom(nextRoom, currentRoom, nextRoomIndex);
 
-                    if (nextRoomIndex != Vector3.zero)
-                    {
-                        //Check Neighbors
-                        bool neighborDoorsFit = false;
-                        //take prior rotations into account
-
-                        while (!neighborDoorsFit && rotations < 4)
-                        {
-                            neighborDoorsFit = checkNeighbors(nextRoom, nextRoomIndex, currentRoom);
-
-                            if (neighborDoorsFit == false)
-                            {
-                                rotations++;
-                                if (rotations < 4)
-                                {
-                                    nextRoom.rotateData_90Deg(1);
-                                    nextRoomIndex = placeRoom(currentRoom, nextRoom, door, nextDoor);
-                                }
-
-                            }
-                        }
-
-
-                        if (nextRoomIndex.x == 0 && nextRoomIndex.y == 0)
-                        {
-                            neighborDoorsFit = false;
-                        }
-
-                        if (neighborDoorsFit)
-                        {
-                            addRoom(nextRoom, currentRoom, nextRoomIndex);
-
-                            roomFits = true;
-                        }
-                        else
-                        {
-                            reroll = true;
-                        }
-
-                    }
-                    else
-                    {
-                        reroll = true;
-                    }
+                    roomFits = true;
                 }
                 else
                 {
                     reroll = true;
                 }
+
                 if (reroll)
                 {
                     roomsToChooseFrom.Remove(nextRoom);
@@ -153,12 +126,61 @@ public class LevelGen3D : MonoBehaviour {
 
     void addRoom(RoomData room, RoomData prevRoom, Vector3 index)
     {
-        /*
+        
         openRoomQueue.Enqueue(room);
         addDoorsToOpenDoors(room);
         addRoomToDict(room);
         allRooms.Add(room);
-        */
+    }
+
+    void addRoomToDict(RoomData room)
+    {
+        //Block all Indices
+        for (int x = (int)room.Index.x; x < (int)room.Index.x + (int)room.Dimensions.x; x++)
+        {
+            for (int y = (int)room.Index.y; y < (int)room.Index.y + (int)room.Dimensions.y; y++)
+            {
+                for (int z = (int)room.Index.z; z < (int)room.Index.z + (int)room.Dimensions.z; z++)
+                {
+                    indexMap.Add(new Vector3(x, y, z), room);
+                }
+            }
+        }
+    }
+
+    void addDoorsToOpenDoors(RoomData room)
+    {
+        foreach(Door door in room.doors)
+        {
+            Vector3 doorWorldIndex = door.WorldIndex;
+            if(door.ConnectedRoom == null)
+            {
+                switch (door.Direction)
+                {
+                    case DoorDirection.NORTH:
+                        doorWorldIndex.z -= 1;
+                        break;
+                    case DoorDirection.EAST:
+                        doorWorldIndex.x -= 1;
+                        break;
+                    case DoorDirection.SOUTH:
+                        doorWorldIndex.z += 1;
+                        break;
+                    case DoorDirection.WEST:
+                        doorWorldIndex.z += 1;
+                        break;
+                    case DoorDirection.UP:
+                        doorWorldIndex.y -= 1;
+                        break;
+                    case DoorDirection.DOWN:
+                        doorWorldIndex.z += 1;
+                        break;
+                    default:
+                        break;
+                }
+                getDoorDictionary(door.Direction).Add(doorWorldIndex, door);
+            }
+        }
     }
 
     RoomData randomWeightedRoom(List<RoomData> rooms)
@@ -269,29 +291,44 @@ public class LevelGen3D : MonoBehaviour {
         int endX = (int)startIndex.x + (int)room.Dimensions.x;
         int endY = (int)startIndex.y + (int)room.Dimensions.x;
         int endZ = (int)startIndex.z + (int)room.Dimensions.z;
-        List<DoorHelperClass> doorsToClose = new List<DoorHelperClass>();
+        List<DoorHelperClass> adjacentDoors = new List<DoorHelperClass>();
+        //List<Door> ownDoors = new List<Door>();
+        Dictionary<Door, Door> ownDoors = new Dictionary<Door, Door>();
 
         foreach(Door door in nextRoom.doors)
         {
             Door tryDoor;
-            if(getDoorDictionary(door.Direction).TryGetValue(door.WorldIndex, out tryDoor))
+            if(getDoorDictionary(door.Direction.opposite()).TryGetValue(door.WorldIndex, out tryDoor))
             {
                 //remember the doors so we can close them later
                 //temporarily remove from doorDictionarys
+                adjacentDoors.Add(new DoorHelperClass(tryDoor, door.WorldIndex));
+                getDoorDictionary(tryDoor.Direction).Remove(door.WorldIndex);
+                ownDoors.Add(door,tryDoor);
             }
         }
 
         //Do normal check. There should be no doors found (the ones that fit are already handled)
-
         for (int x = startX; x <= endX; x++)
         {
             for (int y = startY; y <= endY; y++)
             {
                 Vector3 neighborDoorNorth = new Vector3(x, y, startZ);
                 Vector3 neighborDoorSouth = new Vector3(x, y, endZ);
-
+                Door doorAtIndex;
+                if (northDoors.TryGetValue(neighborDoorNorth, out doorAtIndex))
+                {
+                    fits = false;
+                }
+                doorAtIndex = null;
+                if (southDoors.TryGetValue(neighborDoorSouth, out doorAtIndex))
+                {
+                    fits = false;
+                }
+                /*
                 fits =  checkRoomSide(nextRoom, neighborDoorNorth, DoorDirection.SOUTH, northDoors, ref doorsToClose) &&
                         checkRoomSide(nextRoom, neighborDoorSouth, DoorDirection.NORTH, southDoors, ref doorsToClose);
+                */
             }
         }
 
@@ -301,10 +338,17 @@ public class LevelGen3D : MonoBehaviour {
             {
                 Vector3 neighborDoorEast = new Vector3(startX, y, z);
                 Vector3 neighborDoorWest = new Vector3(endX, y, z);
-                Door doorAtIndex;
 
-                fits =  checkRoomSide(nextRoom, neighborDoorEast, DoorDirection.WEST, eastDoors, ref doorsToClose) &&
-                        checkRoomSide(nextRoom, neighborDoorWest, DoorDirection.EAST, westDoors, ref doorsToClose);
+                Door doorAtIndex;
+                if (eastDoors.TryGetValue(neighborDoorEast, out doorAtIndex))
+                {
+                    fits = false;
+                }
+                doorAtIndex = null;
+                if (westDoors.TryGetValue(neighborDoorWest, out doorAtIndex))
+                {
+                    fits = false;
+                }
             }
         }
 
@@ -315,16 +359,32 @@ public class LevelGen3D : MonoBehaviour {
                 Vector3 neighborDoorUp = new Vector3(x, startY, z);
                 Vector3 neighborDoorDown = new Vector3(x, endY, z);
 
-                fits =  checkRoomSide(nextRoom, neighborDoorUp, DoorDirection.DOWN, upDoors, ref doorsToClose) &&
-                        checkRoomSide(nextRoom, neighborDoorDown, DoorDirection.UP, downDoors, ref doorsToClose);
+                Door doorAtIndex;
+                if (upDoors.TryGetValue(neighborDoorUp, out doorAtIndex))
+                {
+                    fits = false;
+                }
+                doorAtIndex = null;
+                if (downDoors.TryGetValue(neighborDoorDown, out doorAtIndex))
+                {
+                    fits = false;
+                }
             }
         }
 
-        if (fits)
+        if (!fits)
         {
-            foreach (DoorHelperClass dh in doorsToClose)
+            foreach (DoorHelperClass dh in adjacentDoors)
             {
-                getDoorDictionary(dh.door.Direction).Remove(dh.doorIndex);
+                getDoorDictionary(dh.door.Direction).Add(dh.doorIndex, dh.door);
+            }
+        }
+        else
+        {
+            foreach(KeyValuePair<Door,Door> entry in ownDoors)
+            {
+                entry.Key.ConnectedRoom = entry.Value.Room;
+                entry.Value.ConnectedRoom = entry.Key.Room;
             }
         }
 

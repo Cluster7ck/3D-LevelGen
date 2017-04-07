@@ -71,21 +71,14 @@ public class Door
         tempBound = new Vector3(tempBound.z, tempBound.y, tempBound.x);
         rotatedPosition = rotatedPosition + (tempBound / 2);
         RelativeIndex = rotatedPosition;
-        Direction = Direction.next();
+        if(Direction != DoorDirection.UP && Direction != DoorDirection.DOWN)
+        {
+            Direction = Direction.next();
+        }
     }
 
     public bool isDoorOpposite(Door door)
     {
-        if ((this.Direction == DoorDirection.UP && door.Direction == DoorDirection.DOWN) ||
-                (this.Direction == DoorDirection.DOWN && door.Direction == DoorDirection.UP))
-        {
-            return true;
-        }
-        else if((int)this.Direction < 4 && (int)door.Direction < 4)
-        {
-            return Mathf.Abs((this.Direction - door.Direction)) == 2;
-        }
-
-        return false;
+        return door.Direction == Direction.opposite();
     }
 }
