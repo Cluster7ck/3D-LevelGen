@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System.Linq;
 
 [XmlRoot("RoomCollection")]
 public class RoomCollection
@@ -69,7 +70,7 @@ public class RoomCollection
         {
             foreach (RoomData rd in rc.rooms)
             {
-                if (!rooms.Contains(rd))
+                if(rooms.Where(x => x.Name == rd.Name).FirstOrDefault() == null)
                 {
                     rooms.Add(rd);
                 }
@@ -83,7 +84,10 @@ public class RoomCollection
     {
         foreach(RoomData room in rooms)
         {
-            foreach(Door door in room.doors)
+            float outChance;
+            float.TryParse(room.CustomRelativeChance, NumberStyles.Float, CultureInfo.InvariantCulture, out outChance);
+            room.RelativeChance = outChance;
+            foreach (Door door in room.doors)
             {
                 door.Room = room;
             }

@@ -18,17 +18,6 @@ public class RoomBuilder : MonoBehaviour {
     private GameObject parentObject;
     private List<GameObject> blockObjects = new List<GameObject>();
     private RoomData room;
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void buildRoom()
     {
@@ -68,6 +57,8 @@ public class RoomBuilder : MonoBehaviour {
                 GameObject instance = Instantiate(block.type, block.index, new Quaternion(), parentObject.transform) as GameObject;
                 Block blockScript = instance.GetComponent<Block>();
                 blockScript.rotate(block.rotation);
+                blockScript.arrayIndex = count - 1;
+                blockScript.relativePos = block.index;
                 instance.transform.name = count.ToString()+". "+ instance.name.Split('(')[0] + " (" + (int)block.index.x + ", " + (int)block.index.y + ", " + (int)block.index.z + ")";
                 blockObjects.Add(instance);
 
@@ -100,6 +91,7 @@ public class RoomBuilder : MonoBehaviour {
 
     void checkForDoors(BlockData block, Block blockScript, Vector3 lowerBounds, Vector3 upperBounds)
     {
+        //TODO up down
         List<DoorDirection> possibleDir = new List<DoorDirection>();
         if (block.index.x == lowerBounds.x){
             possibleDir.Add(DoorDirection.WEST);
@@ -119,9 +111,9 @@ public class RoomBuilder : MonoBehaviour {
 
         foreach(Block.Openings ope in blockScript.openings)
         {
-            if (possibleDir.Contains(ope.direction))
+            if (possibleDir.Contains(ope.direction) || ope.direction == DoorDirection.UP || ope.direction == DoorDirection.DOWN)
             {
-                Vector3 relativeIndex = ope.direction.DirectionOffset() + block.index;
+                Vector3 relativeIndex = ope.direction.DirectionOffsetIndex() + block.index;
                 relativeIndex += new Vector3(0, ope.yChange, 0);
                 Door newDoor = new Door(relativeIndex, ope.direction);
                 doorObjects.Add(newDoor);
@@ -195,10 +187,10 @@ public class RoomBuilder : MonoBehaviour {
     {
         if(parentObject != null)
         {
-            Gizmos.color = Color.green;
+            Gizmos.color = new Color(0, 1, 0, 0.5F);
             foreach (Door door in doorObjects)
             {
-                Gizmos.DrawCube(door.RelativeIndex, new Vector3(1, 0.1f, 1));
+                Gizmos.DrawCube(door.RelativeIndex, new Vector3(0.8f, 0.1f, 0.8f));
             }
         }
     }
@@ -211,7 +203,7 @@ public class RoomBuilder : MonoBehaviour {
     [System.Serializable]
     public struct BlockData
     {
-        public Vector3 index;
+        public RoomIndex index;
         public GameObject type;
         public int rotation;
     }

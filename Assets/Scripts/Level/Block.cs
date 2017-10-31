@@ -2,20 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class Block : MonoBehaviour {
     public Openings[] openings;
+    public int arrayIndex;
+    public RoomIndex relativePos;
 
     public void rotate(int rotation)
     {
         int rot90Deg = rotation/90;
         transform.Rotate(Vector3.up, rotation);
 
-        //DoorDirection[] rotatedOpenings = new DoorDirection[openings.Length];
         for(int i = 0; i < openings.Length; i++)
         {
             if(openings[i].direction != DoorDirection.UP && openings[i].direction != DoorDirection.DOWN)
             {
-                openings[i].direction = (DoorDirection)(((int)openings[i].direction + rot90Deg) % 4);
+                openings[i].direction =  openings[i].direction.rotate90Horizontal(rot90Deg);
             }
         }
     }

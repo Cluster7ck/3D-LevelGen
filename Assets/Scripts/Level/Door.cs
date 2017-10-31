@@ -4,25 +4,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-public enum DoorDirection
-{
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
-    UP,
-    DOWN,
-}
-
 [System.Serializable]
 public class Door
 {
     public RoomType RoomType { get; set; }
     public DoorDirection Direction { get; set; }
-    public SerializableVector3 RelativeIndex { get; set; }
+    public RoomIndex RelativeIndex { get; set; }
     [XmlIgnoreAttribute]
-    public Vector3 WorldIndex {
-        get { return Room.WorldPosition + RelativeIndex; }
+    public RoomIndex WorldIndex {
+        get { return Room.Index + RelativeIndex; }
     }
 
     [XmlIgnoreAttribute]
@@ -35,14 +25,14 @@ public class Door
         ConnectedRoom = null;
     }
 
-    public Door(Vector3 relativeIndex, DoorDirection direction)
+    public Door(RoomIndex relativeIndex, DoorDirection direction)
     {
         this.RelativeIndex = relativeIndex;
         this.Direction = direction;
         ConnectedRoom = null;
     }
 
-    public Door(RoomData room, Vector3 relativeIndex)
+    public Door(RoomData room, RoomIndex relativeIndex)
     {
         this.Room = room;
         this.RelativeIndex = relativeIndex;
@@ -60,12 +50,13 @@ public class Door
         this.Room = other.Room;
         this.ConnectedRoom = other.ConnectedRoom;
         this.Direction = other.Direction;
-        this.RelativeIndex = other.RelativeIndex;
+        this.RelativeIndex = new RoomIndex(other.RelativeIndex);
     }
 
     public void rotateDoorIndex(Vector3 tempBound)
     {
-        Vector3 rotatedPosition = RelativeIndex - tempBound / 2;
+        Vector3 relIndex = RelativeIndex;
+        Vector3 rotatedPosition = relIndex - tempBound / 2;
 
         rotatedPosition = Quaternion.AngleAxis(90, Vector3.up) * rotatedPosition;
         tempBound = new Vector3(tempBound.z, tempBound.y, tempBound.x);
@@ -80,5 +71,10 @@ public class Door
     public bool isDoorOpposite(Door door)
     {
         return door.Direction == Direction.opposite();
+    }
+
+    public override string ToString()
+    {
+        return "Door: " + Direction + ", " + RelativeIndex;
     }
 }

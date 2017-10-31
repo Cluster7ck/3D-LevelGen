@@ -38,15 +38,15 @@ public class RoomData : System.IEquatable<RoomData>
     }
 
     //Need bounds for y levels. Dimensions enough for xz indices
-    public SerializableVector3 Dimensions { get; set; }
-    public SerializableVector3 UpperBounds { get; set; }
-    public SerializableVector3 LowerBounds { get; set; }
+    public RoomIndex Dimensions { get; set; }
+    public RoomIndex UpperBounds { get; set; }
+    public RoomIndex LowerBounds { get; set; }
 
     [XmlArray("Doors"), XmlArrayItem("Door")]
     public List<Door> doors;
 
     [XmlIgnoreAttribute]
-    public Vector3 Index { get; set; }
+    public RoomIndex Index { get; set; }
     [XmlIgnoreAttribute]
     public Vector3 WorldPosition { get; set; }
 
@@ -56,6 +56,11 @@ public class RoomData : System.IEquatable<RoomData>
     public RoomData()
     {
         doors = new List<Door>();
+        Index = new RoomIndex();
+        
+        Dimensions = new RoomIndex();
+        UpperBounds = new RoomIndex();
+        LowerBounds = new RoomIndex();
     }
 
     public RoomData(string name, RoomType type, float RelativeChance, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound, List<Door> doors)
@@ -72,6 +77,11 @@ public class RoomData : System.IEquatable<RoomData>
         {
             this.doors.Add(new Door(door));
         }
+        foreach (Door door in this.doors)
+        {
+            door.Room = this;
+        }
+        Index = new RoomIndex();
     }
     public RoomData(RoomData other)
     {
@@ -79,12 +89,20 @@ public class RoomData : System.IEquatable<RoomData>
         this.Type = other.Type;
         this.Rotation = other.Rotation;
         this.Dimensions = other.Dimensions;
+        this.LowerBounds = other.LowerBounds;
+        this.UpperBounds = other.UpperBounds;
         this.WorldPosition = other.WorldPosition;
+        this.Index = other.Index;
+        this.RelativeChance = other.RelativeChance;
 
         this.doors = new List<Door>(other.doors.Count);
         foreach (Door door in other.doors)
         {
             this.doors.Add(new Door(door));
+        }
+        foreach(Door door in this.doors)
+        {
+            door.Room = this;
         }
     }
 
@@ -99,7 +117,7 @@ public class RoomData : System.IEquatable<RoomData>
     /// Rotates the dimensions and door indices of the Room by 'int rotations'
     /// </summary>
     /// <param name="rotations"></param>
-    public void rotateData_90Deg(int rotations)
+    public void rotateData_90Deg(int rotations = 1)
     {
 
         for (int i = 0; i < rotations; i++)
@@ -118,7 +136,7 @@ public class RoomData : System.IEquatable<RoomData>
 
     }
 
-    public bool containsDoor(Vector3 index)
+    public bool containsDoor(RoomIndex index)
     {
         foreach (Door door in this.doors)
         {
@@ -131,7 +149,7 @@ public class RoomData : System.IEquatable<RoomData>
         return false;
     }
 
-    public Vector3 doorToWorldIndex(Vector3 door)
+    public RoomIndex doorToWorldIndex(RoomIndex door)
     {
         return this.Index + door;
     } 
@@ -146,7 +164,7 @@ public class RoomData : System.IEquatable<RoomData>
 
     public override int GetHashCode()
     {
-        return Name.GetHashCode() + Index.GetHashCode();
+        return Name.GetHashCode() ^ Index.GetHashCode();
     }
 
     public bool Equals(RoomData other)
@@ -169,5 +187,10 @@ public class RoomData : System.IEquatable<RoomData>
     public static bool operator !=(RoomData m1, RoomData m2)
     {
         return !(m1 == m2);
+    }
+
+    public override string ToString()
+    {
+        return Name + " " + doors.Count + " Doors";
     }
 }

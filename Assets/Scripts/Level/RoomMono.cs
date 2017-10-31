@@ -10,21 +10,26 @@ public class RoomMono : MonoBehaviour {
     public int rotation;
     public float relativeChance;
 
-    public Vector3 dimensions;
-    public Vector3 upperBound;
-    public Vector3 lowerBound;
+    public RoomIndex dimensions;
+    public RoomIndex upperBound;
+    public RoomIndex lowerBound;
+    public RoomIndex Index;
 
     public int pathLength = 0;
     public List<Door> doors = new List<Door>();
 
-    public void init(float baseSize, string roomName, float relativeChance, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound)
+    public void init(float baseSize, string roomName, float relativeChance, int rotation, Vector3 dimensions, Vector3 lowerBound, Vector3 upperBound, RoomIndex Index)
     {
         this.baseSize = baseSize;
         this.roomName = roomName;
         this.relativeChance = relativeChance;
+        this.rotation = rotation;
         this.dimensions = dimensions;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
+        this.Index = Index;
+        this.transform.position = new Vector3(Index.x, Index.y, Index.z);
+        rotateGameObject();
     }
 
     public void rotate90Deg(int rotations)
@@ -69,7 +74,7 @@ public class RoomMono : MonoBehaviour {
                 offset = new Vector3(0, 0, 0);
                 break;
         }
-        this.transform.position = new Vector3(0, 0, 0) + offset;
+        this.transform.position = this.transform.position + offset;
     }
 
 }
